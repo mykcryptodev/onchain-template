@@ -40,10 +40,13 @@ export const Balance: FC<Props> = ({ address, token, className, chainId }) => {
   };
 
   return (
-    <TokenImage 
-      token={tokenData.address} 
-      className={`shadow-none bg-transparent ${className}`}
-    />
+    <div className={`flex items-center gap-1 font-bold ${className}`}>
+      <TokenImage 
+        token={tokenData.address} 
+        className={`shadow-none bg-transparent ${className}`}
+      />
+      <span>{maxDecimals(formatUnits(balance ?? BigInt(0), decimals), 2)}</span>
+    </div>
   )
 };
 
