@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 import SignIn from "~/components/Wallet/SignIn";
-import SignIn2 from "~/components/Wallet/SignIn2";
 import { APP_DESCRIPTION, APP_NAME } from "~/constants";
 import { api } from "~/utils/api";
 
@@ -45,8 +44,6 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <SignIn2 />
-            <div className="divider" />
             <SignIn />
             <AuthShowcase />
           </div>
@@ -66,8 +63,8 @@ function AuthShowcase() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+      <p className="text-center">
+        {sessionData?.user && <span>Logged in as {sessionData.user?.address}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
     </div>
