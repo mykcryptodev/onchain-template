@@ -1,13 +1,13 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
-  getServerSession,
   type DefaultSession,
+  getServerSession,
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 
-import { env } from "~/env";
+import { EthereumProvider } from "~/server/auth/ethereumProvider";
 import { db } from "~/server/db";
 
 /**
@@ -18,17 +18,15 @@ import { db } from "~/server/db";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
+    user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
-    };
+      address?: string;
+    } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    address?: string;
+  }
 }
 
 /**
@@ -37,21 +35,38 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  debug: true, // Enable debug mode for more detailed logs
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.address = user.address;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.address = token.address as string;
+      }
+      return session;
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
+    EthereumProvider({
+      async createUser(credentials) {
+        const user = await db.user.create({
+          data: {
+            address: credentials.address,
+          },
+        });
+        return user;
+      },
+    }),
     /**
      * ...add more providers here.
      *

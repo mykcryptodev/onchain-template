@@ -15,6 +15,7 @@ import {
   WalletDropdownFundLink,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
+import { signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { defineChain } from 'thirdweb';
 import { viemAdapter } from "thirdweb/adapters/viem";
@@ -28,15 +29,31 @@ import Balance from '~/components/Wallet/Balance';
 import { thirdwebClient } from '~/config/thirdweb';
 import { SUPPORTED_CHAINS } from '~/constants';
 import { USDC } from '~/constants/addresses';
+import usePrevious from '~/hooks/usePrevious';
 
 export function Wallet() {
   const { address } = useAccount();
+  const previousAddress = usePrevious(address);
+  const { data: sessionData } = useSession();
 
   const setActiveWallet = useSetActiveWallet();
   const { data: walletClient } = useWalletClient();
   const { disconnectAsync } = useDisconnect();
   const { switchChainAsync } = useSwitchChain();
   const currentChainId = useChainId();
+
+  useEffect(() => {
+    const addressWasChanged = previousAddress !== address;
+    const userConnectedForFirstTime = previousAddress === undefined && address !== undefined;
+    const userHasSession = sessionData?.user !== undefined;
+    if (
+      addressWasChanged && 
+      !userConnectedForFirstTime && 
+      userHasSession
+    ) {
+      void signOut();
+    }
+  }, [address, disconnectAsync, previousAddress, sessionData]);
 
   useEffect(() => {
     const setActive = async () => {
@@ -101,7 +118,6 @@ export function Wallet() {
                     chainId={currentChainId}
                     address={address} 
                   />
-                  
                 ) : (
                   <span className="text-sm text-gray-400">
                     {USDC[currentChainId]}

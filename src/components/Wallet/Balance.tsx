@@ -1,4 +1,4 @@
-import { type Token, TokenChip } from "@coinbase/onchainkit/token";
+import { type Token, TokenImage } from "@coinbase/onchainkit/token";
 import { type FC } from "react";
 import { erc20Abi, formatUnits } from 'viem';
 import { useReadContracts } from 'wagmi';
@@ -40,7 +40,7 @@ export const Balance: FC<Props> = ({ address, token, className, chainId }) => {
   };
 
   return (
-    <TokenChip 
+    <TokenImage 
       token={tokenData.address} 
       className={`shadow-none bg-transparent ${className}`}
     />
