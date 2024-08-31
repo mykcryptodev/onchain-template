@@ -1,6 +1,8 @@
+import { Name } from "@coinbase/onchainkit/identity";
 import Head from "next/head";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useAccount } from "wagmi";
 
 import SignIn from "~/components/Wallet/SignIn";
 import { APP_DESCRIPTION, APP_NAME } from "~/constants";
@@ -55,16 +57,18 @@ export default function Home() {
 
 function AuthShowcase() {
   const { data: sessionData } = useSession();
+  const { address } = useAccount();
 
-  const { data: secretMessage } = api.secret.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
+  const { data: secretMessage } = api.secret.getSecretMessage.useQuery({
+    address: address ?? '',
+  }, { 
+    enabled: sessionData?.user !== undefined && address !== undefined,
+  });
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center">
-        {sessionData?.user && <span>Logged in as {sessionData.user?.address}</span>}
+        {sessionData?.user && <span>Logged in as <Name address={sessionData.user.address} /></span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
     </div>

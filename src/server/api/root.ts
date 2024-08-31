@@ -1,4 +1,4 @@
-import { secretRouter } from "~/server/api/routers/post";
+import { secretRouter } from "~/server/api/routers/secret";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
