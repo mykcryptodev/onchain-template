@@ -44,3 +44,7 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# ignore the solidity node_modules and artifacts
+solidity/node_modules
+solidity/artifacts
