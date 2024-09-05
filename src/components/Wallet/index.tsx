@@ -84,7 +84,7 @@ export function Wallet() {
   return (
     <div className="flex gap-2 items-center">
       <WalletComponent>
-        <ConnectWallet withWalletAggregator>
+        <ConnectWallet withWalletAggregator className="btn btn-primary">
           <Avatar className="h-6 w-6" />
           <Name />
         </ConnectWallet>

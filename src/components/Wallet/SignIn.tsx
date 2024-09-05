@@ -50,7 +50,7 @@ const SignInWithEthereum: FC = () => {
   return (
     <button 
       onClick={promptToSign}
-      className="btn"
+      className="btn btn-primary"
       disabled={isSigningIn}
     >
       {isSigningIn && (
